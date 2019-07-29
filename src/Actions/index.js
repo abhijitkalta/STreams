@@ -7,6 +7,7 @@ import {
   EDIT_STREAM,
   DELETE_STREAM } from './types';
 import streams from '../Apis/streams';
+import history from '../history';
 
 export const signIn = (currentUserId ) => {
   return {
@@ -22,19 +23,21 @@ export const signOut = () => {
 }
 
 export const createStream = (formValues) => {
-  return async (dispatch) => {
-    const response = await streams.post('/streams', formValues);
+  return async (dispatch, getState) => {
+    const { currentUserId } = getState().auth;
+    const response = await streams.post('/streams', {...formValues, currentUserId } );
     dispatch({
       type: CREATE_STREAM,
       payload: response.data
-    })
+    });
+    history.push('/');
   }
 }
 
 export const fetchStreams = () => {
   return async (dispatch) => {
     const response = await streams.get('./streams');
-    disptach({
+    dispatch({
       type: FETCH_STREAMS,
       payload: response.data
     })
@@ -44,7 +47,7 @@ export const fetchStreams = () => {
 export const fetchStream = (id) => {
   return async (dispatch) => {
     const response = await streams.get(`./streams/${id}`);
-    disptach({
+    dispatch({
       type: FETCH_STREAM,
       payload: response.data
     })
@@ -52,21 +55,23 @@ export const fetchStream = (id) => {
 }
 
 export const editStream = (id, formValues) => {
-  return async (dispatch) => {
-    const response = await streams.put(`./streams/${id}`, formValues);
-    disptach({
+  return async (dispatch, getState) => {
+    const response = await streams.patch(`./streams/${id}`, formValues);
+    dispatch({
       type: EDIT_STREAM,
       payload: response.data
-    })
+    });
+    history.push('/');
   }
 }
 
 export const deleteStream = (id) => {
   return async (dispatch) => {
     await streams.delete(`./streams/${id}`);
-    disptach({
+    dispatch({
       type: DELETE_STREAM,
       payload: id
     })
+    history.push('/');
   }
 }
