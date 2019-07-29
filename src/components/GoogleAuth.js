@@ -39,7 +39,6 @@ class GoogleAuth extends Component {
   }
 
   handleSignOut() {
-    console.log(this.props.currentUserId);
     this.auth.signOut()
   }
 
